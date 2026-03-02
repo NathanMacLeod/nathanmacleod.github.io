@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WASM App</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        var Module = {
+            canvas: document.getElementById('canvas'),
+            // called when the .data file and .wasm are fully loaded
+            onRuntimeInitialized: function() {
+                console.log('ready');
+            }
+        };
+    </script>
+
+    <!-- Order matters: Module must be defined before the JS glue code -->
+    <script src="space-combat-arena.js"></script>
+</body>
+</html>
