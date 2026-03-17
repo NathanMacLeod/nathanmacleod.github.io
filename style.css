@@ -1,8 +1,11 @@
 body {
-    background-color: rgb(252, 243, 220);
+    background: linear-gradient(rgb(250, 244, 229), rgb(253, 226, 158));
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     width: 100%;
     row-gap: 80px;
 }
@@ -15,15 +18,19 @@ body {
     border-color: brown;
     border-radius: 16px;
     box-shadow: 2px 5px 7px black;
-    width: 1200px;
+    width: 960px;
 }
 
 .name-card-text {
     flex-grow: 1;
 }
 
+.links * {
+    list-style-type: none;
+    vertical-align: middle;
+}
+
 .name-card-text > h1 {
-    
     text-align: center;
 }
 
@@ -48,8 +55,9 @@ body {
     border-style: ridge;
     border-color: brown;
     border-radius: 16px;
+    padding: 30px;
     box-shadow: 2px 5px 7px black;
-    width: 1200px;
+    width: 960px;
 }
 
 .navigation-tabs > ol {
@@ -74,7 +82,6 @@ body {
     box-shadow: 2px 5px 7px black;
     
     clip: rect(auto, auto, auto, auto);
-    text-align: center;
     width: 160px;
     z-index: 1;
 }
@@ -86,10 +93,84 @@ body {
 .navigation-tabs li > a, .navigation-tabs li > a:visited {
     color: black;
     text-decoration: none;
+    text-align: center;
     display: block;
     width: 100%;
 }
 
+.canvas-container {
+    margin: 30px;
+}
+
 .navigation-tabs li:hover {
     background-color: rgb(252, 201, 61);
+}
+
+.content-card-body ul {
+    padding: 0px;
+    margin-top: 60px;
+}
+
+.content-card-body li {
+    display: flex;
+}
+
+.content-card-body li > a, .content-card-body li > a:visited {
+    display: flex;
+    flex-direction: row;
+    color: black;
+    text-decoration: none;
+    width: 100%;
+}
+
+.project-dates {
+    text-align: center;
+}
+
+.project-card {
+    background-color: rgb(253, 217, 163);
+    border-style: ridge;
+    border-color: rgb(95, 64, 23);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 2px 5px 7px black;
+    display: flex;
+    flex-direction: row;
+}
+
+.content-card-body li:hover .project-card {
+    background-color: rgb(252, 201, 61);
+}
+
+.project-dates {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 20px;
+}
+
+.project-text {
+    flex-grow: 1;
+    margin-left: 45px;
+}
+
+.project-text h1 {
+    text-align: center;
+}
+
+.project-page-project-title div {
+    text-align: center;
+}
+
+.space-combat-embedded-gifs {
+    justify-content: center;
+}
+
+.space-combat-embedded-gifs * {
+    margin: 15px;
+}
+
+.embedded-video {
+    display: flex;
+    justify-content: center;
 }
