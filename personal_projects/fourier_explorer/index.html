@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <link rel="stylesheet" href="/style.css">
+  <head>
+    <meta charset="utf-8" />
+    <title>Nathan MacLeod</title>
+  </head>
+
+  <body>
+    <div class="name-card">
+      <!-- seperated section at the top with name, headshot, and links to other sites -->
+      <div class="name-card-text">
+        <h1>Nathan MacLeod</h1>
+        <ul class="links">
+          <li><a href="https://github.com/NathanMacLeod"><img src="/assets/GitHub_Invertocat_Black.svg" height="25px"> https://github.com/NathanMacLeod</a></li>
+          <li><a href="https://www.linkedin.com/in/nathan-macleod-694104184/"><img src="/assets/LI-In-Bug.png" height="25px"> https://www.linkedin.com/in/nathan-macleod-694104184/</a></li>
+          <li><a href="https://www.youtube.com/@nathanmacleod5122"><img src="/assets/youtube-tile.svg" height="25px"> https://www.youtube.com/@nathanmacleod5122</a></li>
+        </ul>
+      </div>
+      <div class="headshot">
+        <img src="/assets/linkedin_profile.png">
+      </div>
+    </div>
+
+    <div class="content-card">
+      <div class="navigation-tabs">
+        <ol>
+          <li><a href="/index.html">About</a></li>
+          <li><a href="/assets/resume.pdf" target="_blank">Resume</a></li>
+          <li class="active-tab"><a href="/personal_projects/index.html">Personal Projects</a></li>
+        </ol>
+      </div>
+      <div class="content-card-body">
+        <div class="project-page-project-title">
+          <h1>Fourier Series Visualization (C++)</h1>
+          <h2>Dec 2021</h2>
+        </div>
+        <h2>WASM Build!</h2>
+        <p>
+          The fourier series visualization allows the user to draw out a discrete path, and then observe a visualization of a finite fourier series approximating the path.
+          Each term in the fourier series is represented as an arrow- it's length the magnitude of the terms coefficient, the speed and direction it rotates it's frequency,
+          and the initial direction it's phase.
+        </p>
+        <img src="/assets/fourier-visualizer.gif" height="240px"><br>
+        <a href="index.html?mode=1">[click here to run the 2d fourier series visualization]</a><br>
+        <p>
+          The image demo performs a 2d discrete fourier transform on an image, which for the web assembly build has been hard coded to a lizard.<br>
+          The left image shows the original image. The middle shows the noramlized log of the image in the frequency domain. The right shows the reconstruction of the image from the frequency domain.<br>
+          The demo allows you to try removing frequencies and observing the effect on the reconstruction. 
+        </p>
+        <img src="/assets/higher_frequencies_only.png" height="240px"><br>
+        <a href="index.html?mode=0">[click here to run the image transform demo]</a>
+        
+        <div class="canvas-container">
+            <canvas class=emscripten id=canvas oncontextmenu=event.preventDefault() tabindex=-1></canvas>
+            <script type='text/javascript'>
+                var canvasElement = document.getElementById('canvas');
+                // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+                // application robust, you may want to override this behavior before shipping!
+                // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+                canvasElement.addEventListener("webglcontextlost", (e) => {
+                    alert('WebGL context lost. You will need to reload the page.');
+                    e.preventDefault();
+                }, false);
+
+                function setStatus(text) {}
+
+                const queryString = window.location.search;
+                const urlParams = new URLSearchParams(queryString);
+                const mode = urlParams.get('mode');
+                console.log(queryString)
+                const args = mode === '0'? [ '-image', 'lizard.png'] : [ '-fs' ]
+
+                var Module = {
+                    print(...args) {
+                    console.log(...args);
+                    },
+                    arguments: args,
+                    canvas: canvasElement,
+                    setStatus: setStatus,
+                    totalDependencies: 0,
+                    monitorRunDependencies(left) {
+                    this.totalDependencies = Math.max(this.totalDependencies, left);
+                    setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+                    }
+                };
+            </script>
+            <script async src=fourier-explorer.js></script>
+        </div>
+        <h3>Path Demo Controls</h3>
+        <p>
+          Click repeatedly to draw a path on the canvas. Then press 'SPACE' to close the path, and start the visualization mode.
+        </p>
+        <p>
+          Initially the series will have only 3 terms so it will not be very accurate. Press 'P' to increase the number of terms. Press 'O' to reduce the number of terms.<br>
+          You can pan the camera by clicking and holding the left mouse button. The scroll wheel can be used to zoom in or zoom out.<br>
+          'F' will toggle making the camera follow the current position of the fourier series.<br>
+        </p>
+        <h3>Image Transform Demo Controls</h3>
+        <p>
+          Click repeadetly in the frequency domain visualization (middle image) to trace out a closed path. Then press 'I' to remove all frequencies outside this path, or 'O' to remove all frequencies inside the path.
+          After pressing either 'I' or 'O', the reconstruction image will be updated. You can then trace out and apply another path, or press the 'R' button to reset.
+        </p>
+        
+        <h2>Video Demo</h2>
+        <div class="embedded-video">
+          <iframe 
+            class = "youtube-video"
+            width="560" 
+            height="315" 
+            src="https://www.youtube.com/embed/m5fbrBrVzTk" 
+            title="YouTube video player" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+          </iframe>
+        </div>
+        <h2>About</h2>
+        <a href="https://github.com/NathanMacLeod/FourierExplorer">Github project link</a>
+        <p>
+          There were two main sources of inspiration for this project. The first was <a href="https://www.youtube.com/watch?v=r6sGWTCMz2k">this great video by 3Blue1Brown</a>, which I absolutely loved the visualizations in and wanted to try recreating.
+          The second was a computer graphics class I had taken the fall of 2021, which in one lecture briefly discusses transforming images to and from the frequency domain. I thought that was really neat, and I decided to try to write this program over the
+          winter break to try to recreate both of these visualizations.
+        </p>
+        <p>
+          The image demo uses a Fast Fourier Transform implementation that I wrote.
+        </p>
+        <div class="fourier-visualizer-images">
+          <img src="/assets/low_frequencies_only.png" height="240px">
+          <img src="/assets/geting_creative.png" height="240px">
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

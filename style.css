@@ -112,6 +112,7 @@ body {
 }
 
 .content-card-body li {
+    margin-top: 20px;
     display: flex;
 }
 
@@ -136,6 +137,7 @@ body {
     box-shadow: 2px 5px 7px black;
     display: flex;
     flex-direction: row;
+    width: 836px;
 }
 
 .content-card-body li:hover .project-card {
@@ -143,14 +145,18 @@ body {
 }
 
 .project-dates {
+    width: 84px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     margin: 20px;
 }
 
+.project-image {
+    height: 230px;
+}
+
 .project-text {
-    flex-grow: 1;
     margin-left: 45px;
 }
 
