@@ -138,6 +138,7 @@ body {
     display: flex;
     flex-direction: row;
     width: 836px;
+    height: 296px;
 }
 
 .content-card-body li:hover .project-card {
