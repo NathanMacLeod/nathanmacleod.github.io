@@ -102,6 +102,11 @@ body {
     margin: 30px;
 }
 
+.cup-and-ball-canvas-container {
+    margin: 30px;
+    width: 720px;
+}
+
 .navigation-tabs li:hover {
     background-color: rgb(252, 201, 61);
 }

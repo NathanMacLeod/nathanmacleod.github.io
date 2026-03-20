@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <link rel="stylesheet" href="/style.css">
+  <head>
+    <meta charset="utf-8" />
+    <title>Nathan MacLeod</title>
+  </head>
+
+  <body>
+    <div class="name-card">
+      <!-- seperated section at the top with name, headshot, and links to other sites -->
+      <div class="name-card-text">
+        <h1>Nathan MacLeod</h1>
+        <ul class="links">
+          <li><a href="https://github.com/NathanMacLeod"><img src="/assets/GitHub_Invertocat_Black.svg" height="25px"> https://github.com/NathanMacLeod</a></li>
+          <li><a href="https://www.linkedin.com/in/nathan-macleod-694104184/"><img src="/assets/LI-In-Bug.png" height="25px"> https://www.linkedin.com/in/nathan-macleod-694104184/</a></li>
+          <li><a href="https://www.youtube.com/@nathanmacleod5122"><img src="/assets/youtube-tile.svg" height="25px"> https://www.youtube.com/@nathanmacleod5122</a></li>
+        </ul>
+      </div>
+      <div class="headshot">
+        <img src="/assets/linkedin_profile.png">
+      </div>
+    </div>
+
+    <div class="content-card">
+      <div class="navigation-tabs">
+        <ol>
+          <li><a href="/index.html">About</a></li>
+          <li><a href="/assets/resume.pdf" target="_blank">Resume</a></li>
+          <li class="active-tab"><a href="/personal_projects/index.html">Personal Projects</a></li>
+        </ol>
+      </div>
+      <div class="content-card-body">
+        <div class="project-page-project-title">
+          <h1>Mandelbrot Set Viewer (C++)</h1>
+          <h2>Apr 2024 - May 2024</h2>
+        </div>
+        <h2>WASM Interactive Build!</h2>
+        <a id="toggle-visibility" href="#">[click here to toggle visbility]</a>
+        <div class="canvas-container">
+            <canvas class=emscripten id=canvas oncontextmenu=event.preventDefault() tabindex=-1></canvas>
+            <script type='text/javascript'>
+                var canvasElement = document.getElementById('canvas');
+                var visiblityToggle = document.getElementById('toggle-visibility');
+
+                visiblityToggle.addEventListener("click", function() {
+                  if (canvasElement.style.visibility === "hidden") {
+                    canvasElement.style.visibility = "visible";
+                  } else {
+                    canvasElement.style.visibility = "hidden";
+                  }  
+                });
+
+                // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+                // application robust, you may want to override this behavior before shipping!
+                // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+                canvasElement.addEventListener("webglcontextlost", (e) => {
+                    alert('WebGL context lost. You will need to reload the page.');
+                    e.preventDefault();
+                }, false);
+
+                function setStatus(text) {}
+
+                var Module = {
+                    print(...args) {
+                    console.log(...args);
+                    },
+                    canvas: canvasElement,
+                    setStatus: setStatus,
+                    totalDependencies: 0,
+                    monitorRunDependencies(left) {
+                    this.totalDependencies = Math.max(this.totalDependencies, left);
+                    setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+                    }
+                };
+            </script>
+            <script async src=mandlebrot.js></script>
+        </div>
+        <h2>Deep Zoom Video</h2>
+        <div class="embedded-video">
+          <iframe 
+            class = "youtube-video"
+            width="560" 
+            height="315" 
+            src="https://www.youtube.com/embed/sHAK_puHJjg" 
+            title="YouTube video player" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+          </iframe>
+        </div>
+        <h2>About</h2>
+        <a href="https://github.com/NathanMacLeod/MandlebrotDeeperzoom">Github project link</a>
+        <p>
+          I mostly wrote this as I thought it would be interesting to write a software floating point implementation. Using those with a mandelbrot is a pretty natural fit, with normal floating point numbers you can
+          only zoom so far in before you reach the precision limit. With a software floating point, you can increase the level of precision as needed as you go deeper. 
+        </p>
+        <p>
+          One small detail I was proud of was that I independently came up with the idea that for division, I could truncate the current accuracy to a double-precision float and use the hardware to compute an initial estimate,
+          and then refine it using Newtons method to the needed level of precision. I checked online after and found it was an already known optimization, but I was happy that I had thought of it myself.
+        </p>
+        <p>
+          The other trick I use is pertubations <a href="https://dirkwhoffmann.github.io/DeepDrill/docs/Theory/Perturbation.html">(described here)</a>, which is basically calculating a few anchor points in full precision,
+          and estimating the values of nearby points using an estimate based on the original points orbit. I have a pretty naive implementation of this though, so it sometimes results in artifacts.
+        </p>
+        <p>
+          Note the interractive demo is a little bit slow as there is no multithreading. I was mostly interested in optimizing for non-realtime renders, so only bothered to parallelize on the multi-frame level.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

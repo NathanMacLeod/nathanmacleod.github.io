@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <link rel="stylesheet" href="/style.css">
+  <head>
+    <meta charset="utf-8" />
+    <title>Nathan MacLeod</title>
+  </head>
+
+  <body>
+    <div class="name-card">
+      <!-- seperated section at the top with name, headshot, and links to other sites -->
+      <div class="name-card-text">
+        <h1>Nathan MacLeod</h1>
+        <ul class="links">
+          <li><a href="https://github.com/NathanMacLeod"><img src="/assets/GitHub_Invertocat_Black.svg" height="25px"> https://github.com/NathanMacLeod</a></li>
+          <li><a href="https://www.linkedin.com/in/nathan-macleod-694104184/"><img src="/assets/LI-In-Bug.png" height="25px"> https://www.linkedin.com/in/nathan-macleod-694104184/</a></li>
+          <li><a href="https://www.youtube.com/@nathanmacleod5122"><img src="/assets/youtube-tile.svg" height="25px"> https://www.youtube.com/@nathanmacleod5122</a></li>
+        </ul>
+      </div>
+      <div class="headshot">
+        <img src="/assets/linkedin_profile.png">
+      </div>
+    </div>
+
+    <div class="content-card">
+      <div class="navigation-tabs">
+        <ol>
+          <li><a href="/index.html">About</a></li>
+          <li><a href="/assets/resume.pdf" target="_blank">Resume</a></li>
+          <li class="active-tab"><a href="/personal_projects/index.html">Personal Projects</a></li>
+        </ol>
+      </div>
+      <div class="content-card-body">
+        <div class="project-page-project-title">
+          <h1>Cup And Ball Game (C++)</h1>
+          <h2>Dec 2023</h2>
+        </div>
+        <h2>Play a WASM Build!</h2>
+        <a id="toggle-visibility" href="#">[click here to toggle visbility]</a>
+        <center>
+          <div class="cup-and-ball-canvas-container">
+              <canvas class=emscripten id=canvas oncontextmenu=event.preventDefault() tabindex=-1></canvas>
+              <script type='text/javascript'>
+                  var canvasElement = document.getElementById('canvas');
+                  var visiblityToggle = document.getElementById('toggle-visibility');
+
+                  visiblityToggle.addEventListener("click", function() {
+                    if (canvasElement.style.visibility === "hidden") {
+                      canvasElement.style.visibility = "visible";
+                    } else {
+                      canvasElement.style.visibility = "hidden";
+                    }  
+                  });
+
+                  // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+                  // application robust, you may want to override this behavior before shipping!
+                  // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+                  canvasElement.addEventListener("webglcontextlost", (e) => {
+                      alert('WebGL context lost. You will need to reload the page.');
+                      e.preventDefault();
+                  }, false);
+
+                  function setStatus(text) {}
+
+                  var Module = {
+                      print(...args) {
+                      console.log(...args);
+                      },
+                      canvas: canvasElement,
+                      setStatus: setStatus,
+                      totalDependencies: 0,
+                      monitorRunDependencies(left) {
+                      this.totalDependencies = Math.max(this.totalDependencies, left);
+                      setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+                      }
+                  };
+              </script>
+              <script async src=cup_and_ball_game.js></script>
+          </div>
+        </center>
+        <h3>Controls</h3>
+        <p>WASD / Arrow keys, Space, 0-9 number keys.</p>
+        <h2>About</h2>
+        <p>
+          This is a game jam project written for the theme "lost and found". The jam was 72 hours long, but two of the days were work days and I did not take any PTO, so I was pretty limited on time.
+        </p>
+        <p>
+          This program was my first time experimenting with compiling C++ to web assembly.
+        </p>
+        <p>
+          I think the source code is lost for this project. I never uploaded it to github, and the SSD for the laptop I wrote this on got wiped when I installed linux on it.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

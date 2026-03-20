@@ -29,133 +29,6 @@ var ENVIRONMENT_IS_NODE = globalThis.process?.versions?.node && globalThis.proce
 
 // --pre-jses are emitted after the Module integration code, so that they can
 // refer to Module (if they choose; they can also define Module)
-// include: C:\Users\macle\AppData\Local\Temp\tmp8a1bmn4h.js
-if (!Module["expectedDataFileDownloads"]) Module["expectedDataFileDownloads"] = 0;
-
-Module["expectedDataFileDownloads"]++;
-
-(() => {
-  // Do not attempt to redownload the virtual filesystem data when in a pthread or a Wasm Worker context.
-  var isPthread = typeof ENVIRONMENT_IS_PTHREAD != "undefined" && ENVIRONMENT_IS_PTHREAD;
-  var isWasmWorker = typeof ENVIRONMENT_IS_WASM_WORKER != "undefined" && ENVIRONMENT_IS_WASM_WORKER;
-  if (isPthread || isWasmWorker) return;
-  var isNode = globalThis.process && globalThis.process.versions && globalThis.process.versions.node && globalThis.process.type != "renderer";
-  async function loadPackage(metadata) {
-    var PACKAGE_PATH = "";
-    if (typeof window === "object") {
-      PACKAGE_PATH = window["encodeURIComponent"](window.location.pathname.substring(0, window.location.pathname.lastIndexOf("/")) + "/");
-    } else if (typeof process === "undefined" && typeof location !== "undefined") {
-      // web worker
-      PACKAGE_PATH = encodeURIComponent(location.pathname.substring(0, location.pathname.lastIndexOf("/")) + "/");
-    }
-    var PACKAGE_NAME = "wasm_build/fourier-explorer.data";
-    var REMOTE_PACKAGE_BASE = "fourier-explorer.data";
-    var REMOTE_PACKAGE_NAME = Module["locateFile"] ? Module["locateFile"](REMOTE_PACKAGE_BASE, "") : REMOTE_PACKAGE_BASE;
-    var REMOTE_PACKAGE_SIZE = metadata["remote_package_size"];
-    async function fetchRemotePackage(packageName, packageSize) {
-      if (isNode) {
-        var contents = require("fs").readFileSync(packageName);
-        return new Uint8Array(contents).buffer;
-      }
-      if (!Module["dataFileDownloads"]) Module["dataFileDownloads"] = {};
-      try {
-        var response = await fetch(packageName);
-      } catch (e) {
-        throw new Error(`Network Error: ${packageName}`, {
-          e
-        });
-      }
-      if (!response.ok) {
-        throw new Error(`${response.status}: ${response.url}`);
-      }
-      const chunks = [];
-      const headers = response.headers;
-      const total = Number(headers.get("Content-Length") || packageSize);
-      let loaded = 0;
-      Module["setStatus"] && Module["setStatus"]("Downloading data...");
-      const reader = response.body.getReader();
-      while (1) {
-        var {done, value} = await reader.read();
-        if (done) break;
-        chunks.push(value);
-        loaded += value.length;
-        Module["dataFileDownloads"][packageName] = {
-          loaded,
-          total
-        };
-        let totalLoaded = 0;
-        let totalSize = 0;
-        for (const download of Object.values(Module["dataFileDownloads"])) {
-          totalLoaded += download.loaded;
-          totalSize += download.total;
-        }
-        Module["setStatus"] && Module["setStatus"](`Downloading data... (${totalLoaded}/${totalSize})`);
-      }
-      const packageData = new Uint8Array(chunks.map(c => c.length).reduce((a, b) => a + b, 0));
-      let offset = 0;
-      for (const chunk of chunks) {
-        packageData.set(chunk, offset);
-        offset += chunk.length;
-      }
-      return packageData.buffer;
-    }
-    var fetchPromise;
-    var fetched = Module["getPreloadedPackage"] && Module["getPreloadedPackage"](REMOTE_PACKAGE_NAME, REMOTE_PACKAGE_SIZE);
-    if (!fetched) {
-      // Note that we don't use await here because we want to execute the
-      // the rest of this function immediately.
-      fetchPromise = fetchRemotePackage(REMOTE_PACKAGE_NAME, REMOTE_PACKAGE_SIZE);
-    }
-    async function runWithFS(Module) {
-      function assert(check, msg) {
-        if (!check) throw new Error(msg);
-      }
-      for (var file of metadata["files"]) {
-        var name = file["filename"];
-        Module["addRunDependency"](`fp ${name}`);
-      }
-      async function processPackageData(arrayBuffer) {
-        assert(arrayBuffer, "Loading data file failed.");
-        assert(arrayBuffer.constructor.name === ArrayBuffer.name, "bad input to processPackageData " + arrayBuffer.constructor.name);
-        var byteArray = new Uint8Array(arrayBuffer);
-        // Reuse the bytearray from the XHR as the source for file reads.
-        for (var file of metadata["files"]) {
-          var name = file["filename"];
-          var data = byteArray.subarray(file["start"], file["end"]);
-          // canOwn this data in the filesystem, it is a slice into the heap that will never change
-          Module["FS_createDataFile"](name, null, data, true, true, true);
-          Module["removeRunDependency"](`fp ${name}`);
-        }
-        Module["removeRunDependency"]("datafile_wasm_build/fourier-explorer.data");
-      }
-      Module["addRunDependency"]("datafile_wasm_build/fourier-explorer.data");
-      if (!Module["preloadResults"]) Module["preloadResults"] = {};
-      Module["preloadResults"][PACKAGE_NAME] = {
-        fromCache: false
-      };
-      if (!fetched) {
-        fetched = await fetchPromise;
-      }
-      processPackageData(fetched);
-    }
-    if (Module["calledRun"]) {
-      runWithFS(Module);
-    } else {
-      if (!Module["preRun"]) Module["preRun"] = [];
-      Module["preRun"].push(runWithFS);
-    }
-  }
-  loadPackage({
-    "files": [ {
-      "filename": "/lizard.png",
-      "start": 0,
-      "end": 66755
-    } ],
-    "remote_package_size": 66755
-  });
-})();
-
-// end include: C:\Users\macle\AppData\Local\Temp\tmp8a1bmn4h.js
 var arguments_ = [];
 
 var thisProgram = "./this.program";
@@ -403,7 +276,7 @@ function postRun() {
 var wasmBinaryFile;
 
 function findWasmBinary() {
-  return locateFile("fourier-explorer.wasm");
+  return locateFile("mandlebrot.wasm");
 }
 
 function getBinarySync(file) {
@@ -562,6 +435,82 @@ var noExitRuntime = true;
 var stackRestore = val => __emscripten_stack_restore(val);
 
 var stackSave = () => _emscripten_stack_get_current();
+
+var UTF8Decoder = globalThis.TextDecoder && new TextDecoder;
+
+var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
+  var maxIdx = idx + maxBytesToRead;
+  if (ignoreNul) return maxIdx;
+  // TextDecoder needs to know the byte length in advance, it doesn't stop on
+  // null terminator by itself.
+  // As a tiny code save trick, compare idx against maxIdx using a negation,
+  // so that maxBytesToRead=undefined/NaN means Infinity.
+  while (heapOrArray[idx] && !(idx >= maxIdx)) ++idx;
+  return idx;
+};
+
+/**
+     * Given a pointer 'idx' to a null-terminated UTF8-encoded string in the given
+     * array that contains uint8 values, returns a copy of that string as a
+     * Javascript String object.
+     * heapOrArray is either a regular array, or a JavaScript typed array view.
+     * @param {number=} idx
+     * @param {number=} maxBytesToRead
+     * @param {boolean=} ignoreNul - If true, the function will not stop on a NUL character.
+     * @return {string}
+     */ var UTF8ArrayToString = (heapOrArray, idx = 0, maxBytesToRead, ignoreNul) => {
+  var endPtr = findStringEnd(heapOrArray, idx, maxBytesToRead, ignoreNul);
+  // When using conditional TextDecoder, skip it for short strings as the overhead of the native call is not worth it.
+  if (endPtr - idx > 16 && heapOrArray.buffer && UTF8Decoder) {
+    return UTF8Decoder.decode(heapOrArray.subarray(idx, endPtr));
+  }
+  var str = "";
+  while (idx < endPtr) {
+    // For UTF8 byte structure, see:
+    // http://en.wikipedia.org/wiki/UTF-8#Description
+    // https://www.ietf.org/rfc/rfc2279.txt
+    // https://tools.ietf.org/html/rfc3629
+    var u0 = heapOrArray[idx++];
+    if (!(u0 & 128)) {
+      str += String.fromCharCode(u0);
+      continue;
+    }
+    var u1 = heapOrArray[idx++] & 63;
+    if ((u0 & 224) == 192) {
+      str += String.fromCharCode(((u0 & 31) << 6) | u1);
+      continue;
+    }
+    var u2 = heapOrArray[idx++] & 63;
+    if ((u0 & 240) == 224) {
+      u0 = ((u0 & 15) << 12) | (u1 << 6) | u2;
+    } else {
+      u0 = ((u0 & 7) << 18) | (u1 << 12) | (u2 << 6) | (heapOrArray[idx++] & 63);
+    }
+    if (u0 < 65536) {
+      str += String.fromCharCode(u0);
+    } else {
+      var ch = u0 - 65536;
+      str += String.fromCharCode(55296 | (ch >> 10), 56320 | (ch & 1023));
+    }
+  }
+  return str;
+};
+
+/**
+     * Given a pointer 'ptr' to a null-terminated UTF8-encoded string in the
+     * emscripten HEAP, returns a copy of that string as a Javascript String object.
+     *
+     * @param {number} ptr
+     * @param {number=} maxBytesToRead - An optional length that specifies the
+     *   maximum number of bytes to read. You can omit this parameter to scan the
+     *   string until the first 0 byte. If maxBytesToRead is passed, and the string
+     *   at [ptr, ptr+maxBytesToReadr[ contains a null byte in the middle, then the
+     *   string will cut short at that byte index.
+     * @param {boolean=} ignoreNul - If true, the function will not stop on a NUL character.
+     * @return {string}
+     */ var UTF8ToString = (ptr, maxBytesToRead, ignoreNul) => ptr ? UTF8ArrayToString(HEAPU8, ptr, maxBytesToRead, ignoreNul) : "";
+
+var ___assert_fail = (condition, filename, line, func) => abort(`Assertion failed: ${UTF8ToString(condition)}, at: ` + [ filename ? UTF8ToString(filename) : "unknown filename", line, func ? UTF8ToString(func) : "unknown function" ]);
 
 class ExceptionInfo {
   // excPtr - Thrown object pointer to wrap. Metadata pointer is calculated from it.
@@ -754,66 +703,6 @@ var PATH_FS = {
     outputParts = outputParts.concat(toParts.slice(samePartsLength));
     return outputParts.join("/");
   }
-};
-
-var UTF8Decoder = globalThis.TextDecoder && new TextDecoder;
-
-var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
-  var maxIdx = idx + maxBytesToRead;
-  if (ignoreNul) return maxIdx;
-  // TextDecoder needs to know the byte length in advance, it doesn't stop on
-  // null terminator by itself.
-  // As a tiny code save trick, compare idx against maxIdx using a negation,
-  // so that maxBytesToRead=undefined/NaN means Infinity.
-  while (heapOrArray[idx] && !(idx >= maxIdx)) ++idx;
-  return idx;
-};
-
-/**
-     * Given a pointer 'idx' to a null-terminated UTF8-encoded string in the given
-     * array that contains uint8 values, returns a copy of that string as a
-     * Javascript String object.
-     * heapOrArray is either a regular array, or a JavaScript typed array view.
-     * @param {number=} idx
-     * @param {number=} maxBytesToRead
-     * @param {boolean=} ignoreNul - If true, the function will not stop on a NUL character.
-     * @return {string}
-     */ var UTF8ArrayToString = (heapOrArray, idx = 0, maxBytesToRead, ignoreNul) => {
-  var endPtr = findStringEnd(heapOrArray, idx, maxBytesToRead, ignoreNul);
-  // When using conditional TextDecoder, skip it for short strings as the overhead of the native call is not worth it.
-  if (endPtr - idx > 16 && heapOrArray.buffer && UTF8Decoder) {
-    return UTF8Decoder.decode(heapOrArray.subarray(idx, endPtr));
-  }
-  var str = "";
-  while (idx < endPtr) {
-    // For UTF8 byte structure, see:
-    // http://en.wikipedia.org/wiki/UTF-8#Description
-    // https://www.ietf.org/rfc/rfc2279.txt
-    // https://tools.ietf.org/html/rfc3629
-    var u0 = heapOrArray[idx++];
-    if (!(u0 & 128)) {
-      str += String.fromCharCode(u0);
-      continue;
-    }
-    var u1 = heapOrArray[idx++] & 63;
-    if ((u0 & 224) == 192) {
-      str += String.fromCharCode(((u0 & 31) << 6) | u1);
-      continue;
-    }
-    var u2 = heapOrArray[idx++] & 63;
-    if ((u0 & 240) == 224) {
-      u0 = ((u0 & 15) << 12) | (u1 << 6) | u2;
-    } else {
-      u0 = ((u0 & 7) << 18) | (u1 << 12) | (u2 << 6) | (heapOrArray[idx++] & 63);
-    }
-    if (u0 < 65536) {
-      str += String.fromCharCode(u0);
-    } else {
-      var ch = u0 - 65536;
-      str += String.fromCharCode(55296 | (ch >> 10), 56320 | (ch & 1023));
-    }
-  }
-  return str;
 };
 
 var FS_stdin_getChar_buffer = [];
@@ -3083,20 +2972,6 @@ var FS = {
     return node;
   }
 };
-
-/**
-     * Given a pointer 'ptr' to a null-terminated UTF8-encoded string in the
-     * emscripten HEAP, returns a copy of that string as a Javascript String object.
-     *
-     * @param {number} ptr
-     * @param {number=} maxBytesToRead - An optional length that specifies the
-     *   maximum number of bytes to read. You can omit this parameter to scan the
-     *   string until the first 0 byte. If maxBytesToRead is passed, and the string
-     *   at [ptr, ptr+maxBytesToReadr[ contains a null byte in the middle, then the
-     *   string will cut short at that byte index.
-     * @param {boolean=} ignoreNul - If true, the function will not stop on a NUL character.
-     * @return {string}
-     */ var UTF8ToString = (ptr, maxBytesToRead, ignoreNul) => ptr ? UTF8ArrayToString(HEAPU8, ptr, maxBytesToRead, ignoreNul) : "";
 
 var SYSCALLS = {
   calculateAt(dirfd, path, allowEmpty) {
@@ -5599,14 +5474,6 @@ var stringToUTF8OnStack = str => {
 
 var requestFullscreen = Browser.requestFullscreen;
 
-var FS_createPath = (...args) => FS.createPath(...args);
-
-var FS_unlink = (...args) => FS.unlink(...args);
-
-var FS_createLazyFile = (...args) => FS.createLazyFile(...args);
-
-var FS_createDevice = (...args) => FS.createDevice(...args);
-
 FS.createPreloadedFile = FS_createPreloadedFile;
 
 FS.preloadFile = FS_preloadFile;
@@ -5644,33 +5511,17 @@ MainLoop.init();
 }
 
 // Begin runtime exports
-Module["addRunDependency"] = addRunDependency;
-
-Module["removeRunDependency"] = removeRunDependency;
-
 Module["requestFullscreen"] = requestFullscreen;
-
-Module["FS_preloadFile"] = FS_preloadFile;
-
-Module["FS_unlink"] = FS_unlink;
-
-Module["FS_createPath"] = FS_createPath;
-
-Module["FS_createDevice"] = FS_createDevice;
-
-Module["FS_createDataFile"] = FS_createDataFile;
-
-Module["FS_createLazyFile"] = FS_createLazyFile;
 
 // End runtime exports
 // Begin JS library exports
 // End JS library exports
 // end include: postlibrary.js
 var ASM_CONSTS = {
-  49424: () => {
+  53012: () => {
     window.onunload = Module._olc_OnPageUnload;
   },
-  49468: ($0, $1) => {
+  53056: ($0, $1) => {
     Module.olc_AspectRatio = $0 / $1;
     Module.olc_AssumeDefaultShells = (document.querySelectorAll(".emscripten").length >= 3) ? true : false;
     var olc_ResizeHandler = function() {
@@ -5742,6 +5593,7 @@ function assignWasmExports(wasmExports) {
 }
 
 var wasmImports = {
+  /** @export */ __assert_fail: ___assert_fail,
   /** @export */ __cxa_throw: ___cxa_throw,
   /** @export */ __syscall_fcntl64: ___syscall_fcntl64,
   /** @export */ __syscall_ioctl: ___syscall_ioctl,
