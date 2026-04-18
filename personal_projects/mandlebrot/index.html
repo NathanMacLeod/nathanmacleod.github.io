@@ -92,8 +92,8 @@
         <h2>About</h2>
         <a href="https://github.com/NathanMacLeod/MandlebrotDeeperzoom">Github project link</a>
         <p>
-          I mostly wrote this as I thought it would be interesting to write a software floating point implementation. Using those with a mandelbrot is a pretty natural fit, with normal floating point numbers you can
-          only zoom so far in before you reach the precision limit. With a software floating point, you can increase the level of precision as needed as you go deeper. 
+          I mostly wrote this as an excuse to write a software floating point implementation. Using those with a mandelbrot is a pretty natural fit, as with normal floating point numbers you can
+          only zoom so far in before you reach the precision limit. With a software floating point, the level of precision can be arbitrarily increased as needed. 
         </p>
         <p>
           One small detail I was proud of was that I independently came up with the idea that for division, I could truncate the current accuracy to a double-precision float and use the hardware to compute an initial estimate,
@@ -104,7 +104,7 @@
           and estimating the values of nearby points using an estimate based on the original points orbit. I have a pretty naive implementation of this though, so it sometimes results in artifacts.
         </p>
         <p>
-          Note the interractive demo is a little bit slow as there is no multithreading. I was mostly interested in optimizing for non-realtime renders, so only bothered to parallelize on the multi-frame level.
+          Note the interractive demo is a little bit slow as there is no multithreading. I was mostly interested in optimizing for non-realtime renders, so only bothered to parallelize across multiple frames.
         </p>
       </div>
     </div>
