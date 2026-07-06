@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <link rel="stylesheet" href="/style.css">
+  <head>
+    <meta charset="utf-8" />
+    <title>Nathan MacLeod</title>
+  </head>
+
+  <body>
+    <div class="name-card">
+      <!-- seperated section at the top with name, headshot, and links to other sites -->
+      <div class="name-card-text">
+        <h1>Nathan MacLeod</h1>
+        <ul class="links">
+          <li><a href="https://github.com/NathanMacLeod"><img src="/assets/GitHub_Invertocat_Black.svg" height="25px"> https://github.com/NathanMacLeod</a></li>
+          <li><a href="https://www.linkedin.com/in/nathan-macleod-694104184/"><img src="/assets/LI-In-Bug.png" height="25px"> https://www.linkedin.com/in/nathan-macleod-694104184/</a></li>
+          <li><a href="https://www.youtube.com/@nathanmacleod5122"><img src="/assets/youtube-tile.svg" height="25px"> https://www.youtube.com/@nathanmacleod5122</a></li>
+        </ul>
+      </div>
+      <div class="headshot">
+        <img src="/assets/linkedin_profile.png">
+      </div>
+    </div>
+
+    <div class="content-card">
+      <div class="navigation-tabs">
+        <ol>
+          <li><a href="/index.html">About</a></li>
+          <li><a href="/assets/resume.pdf" target="_blank">Resume</a></li>
+          <li class="active-tab"><a href="/personal_projects/index.html">Personal Projects</a></li>
+        </ol>
+      </div>
+      <div class="content-card-body">
+        <div class="project-page-project-title">
+          <h1>2D Physics (Java)</h1>
+          <h2>Oct 2018 - Dec 2018</h2>
+        </div>
+        <h2>Video Demo</h2>
+        <div class="embedded-video">
+          <iframe 
+            class = "youtube-video"
+            width="900" 
+            height="540" 
+            src="https://www.youtube.com/embed/7Lbg61UJLrk" 
+            title="YouTube video player" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+          </iframe>
+        </div>
+        <h2>About</h2>
+        <a href="https://github.com/NathanMacLeod/SimplePhysics">Github project link</a>
+        <p>
+          This is a 2d physics engine I wrote my senior year of highschool. One interesting aspect of the engine is that it supports concave objects,
+          as one of my goals with this project was for the user to be able to draw arbitrary objects at runtime. I got this working with a very convoluted
+          and slow collision detection method I came up with, which works but has pretty terrible performance. Correctness wise it works decently though,
+          as can be seen in the video.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
