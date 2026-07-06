@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <link rel="stylesheet" href="/style.css">
+  <head>
+    <meta charset="utf-8" />
+    <title>Nathan MacLeod</title>
+  </head>
+
+  <body>
+    <div class="name-card">
+      <!-- seperated section at the top with name, headshot, and links to other sites -->
+      <div class="name-card-text">
+        <h1>Nathan MacLeod</h1>
+        <ul class="links">
+          <li><a href="https://github.com/NathanMacLeod"><img src="/assets/GitHub_Invertocat_Black.svg" height="25px"> https://github.com/NathanMacLeod</a></li>
+          <li><a href="https://www.linkedin.com/in/nathan-macleod-694104184/"><img src="/assets/LI-In-Bug.png" height="25px"> https://www.linkedin.com/in/nathan-macleod-694104184/</a></li>
+          <li><a href="https://www.youtube.com/@nathanmacleod5122"><img src="/assets/youtube-tile.svg" height="25px"> https://www.youtube.com/@nathanmacleod5122</a></li>
+        </ul>
+      </div>
+      <div class="headshot">
+        <img src="/assets/linkedin_profile.png">
+      </div>
+    </div>
+
+    <div class="content-card">
+      <div class="navigation-tabs">
+        <ol>
+          <li><a href="/index.html">About</a></li>
+          <li><a href="/assets/resume.pdf" target="_blank">Resume</a></li>
+          <li class="active-tab"><a href="/personal_projects/index.html">Personal Projects</a></li>
+        </ol>
+      </div>
+      <div class="content-card-body">
+        <div class="project-page-project-title">
+          <h1>Real Time Physics Engine (C++)</h1>
+          <h2>Apr 2022 - Present</h2>
+        </div>
+        <h2>Video Demo</h2>
+        <p>View on YouTube to see additional demos in the playlist.</p>
+        <div class="embedded-video">
+          <iframe 
+            class = "youtube-video"
+            width="900" 
+            height="540" 
+            src="https://www.youtube.com/embed/8do5ZWbF5Mo?si=ayvSqVweoiZ10BxE" 
+            title="YouTube video player" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+          </iframe>
+        </div>
+        <h2>About</h2>
+        <a href="https://github.com/NathanMacLeod/ConstraintPhysics">Github project link</a>
+        <p>
+          This project has been my attempt to build a more robust physics engine compared to the previous one I used in the Space Combat Arena project.
+          I enjoy working on game physics as they involve a lot of mathematics and low level multi-threaded programming that I personally find very interesting.
+        </p>
+        <p>
+          The engine supports convex hulls, spheres, cylinders, capsules for collision primitives. For static or kinematic objects triangle meshes are also supported.
+          Collision detection between the convex objects uses SAT with a Gauss Map optimization to avoid n^2 edge vs edge checks, using the method described in
+          <a href="https://media.gdcvault.com/gdc2013/slides/822403Gregorius_Dirk_TheSeparatingAxisTest.pdf">this presentation by Dirk Gregorious</a>. 
+          Contacts are persisted accross frames to allow for warm starting. The contact is identified using an id system based on the features that generate the contact, e.g. edge 1 of object A + face 3 of object B.
+        </p>
+        <p>
+          For broad phase, the engine uses an AABB tree as described in <a href="https://box2d.org/files/ErinCatto_DynamicBVH_GDC2019.pdf">this presentation by Erin Catto</a>
+        </p>
+        <p>
+          The solver is a hybrid-solver using sequential impulses supporting substeps. A block solver computes a direct solution for groups of holonomic constraints via LDL decomposition as described
+          in <a href="https://www.youtube.com/watch?v=tes8siA8mCA">this presentation by Maciej Mizerski</a>. Positional error is solved via dual impulses; psuedo impulses are solved for alongside the normal impulses and applied for a single frame.
+          Multiple constraint types are supported by the solver: contact, friction, distance, ball socket, cone, twist, hinge, sliding hinge, sliding, motor, piston, & weld.
+        </p>
+        <p>
+          Gyroscopic motion is simulated by solving for internal gyroscopic forces implicitly while integrating velocities, using the method described in <a href="https://gdcvault.com/play/1022196/Physics-for-Game-Programmers-Numerical">this presentation by Erin Catto</a>.
+        </p>
+        <p>
+          The engine is multi-threaded, using a thread pool and custom task scheduling system.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
